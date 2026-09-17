@@ -1,11 +1,11 @@
 import request from 'supertest';
 import { expect } from 'chai';
-import mongoose from 'mongoose';
 import app from '../src/app.js';
+import { closeDatabase } from '../src/database/db.js';
 
 describe('POST /api/auth/login', () => {
   after(async () => {
-    await mongoose.connection.close();
+    await closeDatabase();
   });
 
   it('deve retornar 200 e um token quando o admin informar e-mail e senha corretos', async () => {

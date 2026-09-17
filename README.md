@@ -81,7 +81,8 @@ docs/
 Pré-requisitos:
 
 - Node.js 18+ (usa `crypto.randomUUID`, disponível nativamente).
-- Uma instância do **MongoDB** acessível (local ou remota).
+- Node.js com acesso à internet na primeira execução, para o `mongodb-memory-server` baixar o
+  binário do MongoDB.
 
 ```bash
 # instalar dependências
@@ -99,13 +100,9 @@ ambiente `PORT`).
 
 ### Configuração do MongoDB
 
-Por padrão, a API se conecta a um MongoDB local em
-`mongodb://127.0.0.1:27017/gestao-de-alunos`. Para usar outra instância (ex.: MongoDB Atlas ou um
-container), defina a variável de ambiente `MONGODB_URI` antes de subir o servidor:
-
-```bash
-MONGODB_URI="mongodb://usuario:senha@host:27017/nome-do-banco" npm start
-```
+A API usa exclusivamente o `mongodb-memory-server`. Ao iniciar, ele baixa (se necessário) e
+executa um binário real do MongoDB em memória, sem exigir MongoDB instalado, Docker ou Atlas.
+Os dados são temporários e desaparecem quando o processo é encerrado.
 
 Na primeira execução com o banco vazio, a API popula automaticamente as coleções com o conjunto de
 dados fake descrito em [Dados fake pré-carregados](#dados-fake-pré-carregados). Em execuções
