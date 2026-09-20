@@ -12,10 +12,6 @@ on:
 jobs:
   test:
     runs-on: ubuntu-latest
-    env:
-      BASE_URL: http://localhost:3000
-      ADMIN_EMAIL: ${{ secrets.ADMIN_EMAIL }}
-      ADMIN_SENHA: ${{ secrets.ADMIN_SENHA }}
 
     steps:
       - name: Clonar repositório
@@ -26,8 +22,14 @@ jobs:
         with:
           node-version: 20
 
-      - name: Instalar dependências
+      - name: Instalar dependências do projeto
         run: npm ci
+
+      - name: Criar arquivo .env a partir das Secrets
+        env:
+          ENV_CONTENT: ${{ secrets.TEST_SECRETS }}
+        run: |
+          echo "$ENV_CONTENT" > .env
 
       - name: Iniciar API
         run: nohup npm start > server.log 2>&1 &
