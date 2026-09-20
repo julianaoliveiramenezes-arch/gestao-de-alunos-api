@@ -9,6 +9,6 @@ export function novoAluno() {
         nome: `${firstName} ${lastName}`,
         email: `${firstName.toLocaleLowerCase()}.${lastName.toLocaleLowerCase()}.${timestamp}@example.com`,
         matricula: `${timestamp}`,
-        senha: faker.string.alpha(6)
+        senha: 'faker.string.alpha(6)'
     };
 }

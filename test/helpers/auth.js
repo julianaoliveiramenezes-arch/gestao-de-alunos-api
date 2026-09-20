@@ -1,17 +1,33 @@
-import request from 'supertest';
-import 'dotenv/config'
+import { api } from './api.js';
+import 'dotenv/config';
 
-/**
- * Realiza o login na API e retorna o token JWT 
- */
-export async function getToken(ADMIN_EMAIL, ADMIN_SENHA) {
-  const response = await request('http://localhost:3000')
-    .post('/api/auth/login')
-    .set('Content-Type', 'application/json')
-    .send({ 
-      email: ADMIN_EMAIL,
-      senha: ADMIN_SENHA
-    });
+let tokenEmCache = null
 
-  return response.body.token;
+export async function comTokenDeAdmin() {
+    if (!tokenEmCache) {
+        const loginResposta = await api()
+            .post('/api/auth/login')
+            .set('Content-Type', 'application/json')
+            .send({
+                email: process.env.ADMIN_EMAIL,
+                senha: process.env.ADMIN_SENHA
+            });
+
+        tokenEmCache = loginResposta.body.token;
+    }
+
+    return `Bearer ${tokenEmCache}`;
 }
+
+export async function getToken(emailUser, passUser) {
+    const loginResposta = await api()
+        .post('/api/auth/login')
+        .set('Content-Type', 'application/json')
+        .send({
+            email: emailUser,
+            senha: passUser
+        });
+
+    return loginResposta.body.token;
+}
+

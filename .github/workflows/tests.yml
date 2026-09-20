@@ -1,40 +1,40 @@
-name: Testes de API
+name: Pipeline de Testes Automatizados da API
 
 on:
+  # Dispara a cada push
   push:
-    branches: [main]
-  pull_request:
-    branches: [main]
+    branches: [ main,BranchJuMenezes ]
+
+  # Dispara automaticamente uma vez por dia (às 00:00 UTC / 21:00 BRT)
+  schedule:
+    - cron: '0 0 * * *'
 
 jobs:
   test:
     runs-on: ubuntu-latest
 
-    services:
-      mongodb:
-        image: mongo:7
-        ports:
-          - 27017:27017
-        options: >-
-          --health-cmd "mongosh --eval 'db.runCommand({ ping: 1 })'"
-          --health-interval 10s
-          --health-timeout 5s
-          --health-retries 5
-
     steps:
-      - name: Checkout do código
-        uses: actions/checkout@v4
+      - name: Clonar repositório
+        uses: actions/checkout@v3
 
-      - name: Configurar Node.js
-        uses: actions/setup-node@v4
+      - name: Configurar Node.js (versão 18)
+        uses: actions/setup-node@v3
         with:
-          node-version: 20
-          cache: npm
+          node-version: 18
 
-      - name: Instalar dependências
-        run: npm ci
+      - name: Instalar dependências do projeto
+        run: npm install
 
-      - name: Executar testes
-        run: npm test
+      - name: Iniciar servidor da API em background
         env:
-          MONGODB_URI: mongodb://127.0.0.1:27017/gestao-de-alunos-test
+          PORT: 3000
+        run: |
+          nohup npm start > api.log 2>&1 &
+          sleep 8
+
+      - name: Executar suíte de testes
+        env:
+          BASE_URL: http://localhost:3000
+          ADMIN_EMAIL: admin@escola.com
+          ADMIN_SENHA: admin123
+        run: npm test
