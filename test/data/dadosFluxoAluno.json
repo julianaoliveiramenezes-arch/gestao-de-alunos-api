@@ -1,0 +1,28 @@
+[
+  {
+    "cenario": "Cadastro e entrega de trabalho de Matemática",
+    "aluno": {
+      "nome": "Lucas Silveira",
+      "email": "lucas.silveira@example.com",
+      "matricula": "2024099",
+      "senha": "senha123Aluno"
+    },
+    "trabalho": {
+      "disciplinaId": "disciplina-matematica",
+      "titulo": "Resolução de Equações Diferenciais"
+    }
+  },
+  {
+    "cenario": "Cadastro e entrega de trabalho de Programação Web",
+    "aluno": {
+      "nome": "Mariana Costa",
+      "email": "mariana.costa@example.com",
+      "matricula": "2024100",
+      "senha": "senha123Aluno"
+    },
+    "trabalho": {
+      "disciplinaId": "disciplina-programacao-web",
+      "titulo": "Desenvolvimento de API REST"
+    }
+  }
+]
