@@ -1,11 +1,10 @@
 name: Pipeline de Testes Automatizados da API
 
 on:
-  # Dispara a cada push
   push:
-    branches: [ main,BranchJuMenezes ]
-
-  # Dispara automaticamente uma vez por dia (às 00:00 UTC / 21:00 BRT)
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
   schedule:
     - cron: '0 0 * * *'
 
@@ -25,7 +24,7 @@ jobs:
       - name: Instalar dependências do projeto
         run: npm ci
 
-      - name: Criar arquivo .env a partir das Secrets
+      - name: Criar arquivo .env
         env:
           ENV_CONTENT: ${{ secrets.TEST_SECRETS }}
         run: |
@@ -39,3 +38,7 @@ jobs:
 
       - name: Executar testes
         run: npm test
+
+      - name: Exibir logs da API se houver falha
+        if: failure()
+        run: cat server.log
