@@ -12,29 +12,28 @@ on:
 jobs:
   test:
     runs-on: ubuntu-latest
+    env:
+      BASE_URL: http://localhost:3000
+      ADMIN_EMAIL: ${{ secrets.ADMIN_EMAIL }}
+      ADMIN_SENHA: ${{ secrets.ADMIN_SENHA }}
 
     steps:
       - name: Clonar repositório
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
-      - name: Configurar Node.js (versão 18)
-        uses: actions/setup-node@v3
+      - name: Configurar Node.js (versão 20)
+        uses: actions/setup-node@v4
         with:
-          node-version: 18
+          node-version: 20
 
-      - name: Instalar dependências do projeto
-        run: npm install
+      - name: Instalar dependências
+        run: npm ci
 
-      - name: Iniciar servidor da API em background
-        env:
-          PORT: 3000
-        run: |
-          nohup npm start > api.log 2>&1 &
-          sleep 8
+      - name: Iniciar API
+        run: nohup npm start > server.log 2>&1 &
 
-      - name: Executar suíte de testes
-        env:
-          BASE_URL: http://localhost:3000
-          ADMIN_EMAIL: admin@escola.com
-          ADMIN_SENHA: admin123
+      - name: Aguardar API
+        run: curl --retry 30 --retry-all-errors --retry-delay 1 --fail http://localhost:3000/
+
+      - name: Executar testes
         run: npm test
