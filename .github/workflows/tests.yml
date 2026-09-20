@@ -1,11 +1,10 @@
 name: Pipeline de Testes Automatizados da API
 
 on:
-  # Dispara a cada push
   push:
-    branches: [ main,BranchJuMenezes ]
-
-  # Dispara automaticamente uma vez por dia (às 00:00 UTC / 21:00 BRT)
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
   schedule:
     - cron: '0 0 * * *'
 
@@ -15,26 +14,31 @@ jobs:
 
     steps:
       - name: Clonar repositório
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
-      - name: Configurar Node.js (versão 18)
-        uses: actions/setup-node@v3
+      - name: Configurar Node.js (versão 20)
+        uses: actions/setup-node@v4
         with:
-          node-version: 18
+          node-version: 20
 
       - name: Instalar dependências do projeto
-        run: npm install
+        run: npm ci
 
-      - name: Iniciar servidor da API em background
+      - name: Criar arquivo .env
         env:
-          PORT: 3000
+          ENV_CONTENT: ${{ secrets.TEST_SECRETS }}
         run: |
-          nohup npm start > api.log 2>&1 &
-          sleep 8
+          echo "$ENV_CONTENT" > .env
 
-      - name: Executar suíte de testes
-        env:
-          BASE_URL: http://localhost:3000
-          ADMIN_EMAIL: admin@escola.com
-          ADMIN_SENHA: admin123
+      - name: Iniciar API
+        run: nohup npm start > server.log 2>&1 &
+
+      - name: Aguardar API
+        run: curl --retry 30 --retry-all-errors --retry-delay 1 --fail http://localhost:3000/
+
+      - name: Executar testes
         run: npm test
+
+      - name: Exibir logs da API se houver falha
+        if: failure()
+        run: cat server.log
